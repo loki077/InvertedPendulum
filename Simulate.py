@@ -5,14 +5,14 @@ import matplotlib.animation as animation
 import math
 
 #Define constants that go into simulation
-massCart = 5.0; #[kg]
+massCart = 5; #[kg]
 massPendulum = 1.0; #[kg]
-Length = 0.5; # [m]
+Length = 2; # [m]
 g = 9.82; #[m/s^2]
 Force = 0; #[N]
 Torque = 0;
-Bcart = 2; #[N / m/s]
-BPendulum = 0.1; #[Nm / rad/s]
+Bcart = 1; #[N / m/s]
+BPendulum = 0.4; #[Nm / rad/s]
 
 Args =  (massCart, Length, g, massPendulum, Bcart, Force, Torque);
 
@@ -53,6 +53,40 @@ def PendulumOnCartSim(InitialValues, t, massCart, Length, g, massPendulum, Bcart
 
 SimValues = integrate.odeint(PendulumOnCartSim, InitialValues, Time, args=Args)
 
-#plot figures
-plt.plot(Time,SimValues[:,3])
+#Position of cart and pendulum
+xPositionCart = SimValues[:,2];
+yPositionCart = np.zeros(len(SimValues[:,1]));
+#PositionCart = (xPositionCart, yPositionCart);
+
+xPositionPendulum = xPositionCart + Length*np.sin(SimValues[:,0]);
+yPositionPendulum = Length*np.cos(SimValues[:,0]);
+
+##plot figures
+#plt.plot(xPositionPendulum,yPositionPendulum)
+#plt.show()
+
+fig = plt.figure()
+ax = fig.add_subplot(111, autoscale_on=False, xlim=(-3, 3), ylim=(-3, 3))
+ax.grid()
+
+line, = ax.plot([], [], 'o-', lw=2)
+time_template = 'time = %.1fs'
+time_text = ax.text(0.05, 0.9, '', transform=ax.transAxes)
+
+def init():
+    line.set_data([], [])
+    time_text.set_text('')
+    return line, time_text
+
+def animate(i):
+	thisx = [xPositionCart[i], xPositionPendulum[i]]
+	thisy = [yPositionCart[i], yPositionPendulum[i]]
+
+	line.set_data(thisx, thisy)
+	time_text.set_text(time_template % (i*Ts))
+	return line, time_text
+
+ani = animation.FuncAnimation(fig, animate, np.arange(1, len(SimValues)),
+                              interval=10, blit=True, init_func=init)
+
 plt.show()
