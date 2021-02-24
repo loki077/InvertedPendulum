@@ -7,7 +7,7 @@ import math
 #Define constants that go into simulation
 massCart = 5; #[kg]
 massPendulum = 1.0; #[kg]
-Length = 2; # [m]
+Length = 1; # [m]
 g = 9.82; #[m/s^2]
 Force = 0; #[N]
 Torque = 0;
@@ -39,14 +39,12 @@ def PendulumOnCartSim(InitialValues, t, massCart, Length, g, massPendulum, Bcart
 	Torque_eq = Torque-BPendulum*InitialValues[1]; #total torque acting on system
 
 
-	Theta2Dot = ( Torque_eq/(massPendulum*Length)*(massPendulum+massCart) - Force_eq*math.cos(InitialValues[0]) + g*math.sin(InitialValues[0])*(massCart+massPendulum) \
-		-massPendulum*Length*math.sin(InitialValues[0])*math.cos(InitialValues[0])*InitialValues[1]**2)/( Length*(massCart+massPendulum*math.sin(InitialValues[0])) );
-	x2Dot = ( -massPendulum*math.sin(InitialValues[0])*(g*math.cos(InitialValues[0]) -Length*InitialValues[1]**2) -  \
-		Torque_eq/Length*math.cos(InitialValues[0])+Force_eq  ) / ( massCart+massPendulum*math.sin(InitialValues[0]) );
+	Theta2Dot = ( Torque_eq/(massPendulum*Length)*(massPendulum+massCart) - Force_eq*np.cos(InitialValues[0]) + g*np.sin(InitialValues[0])*(massCart+massPendulum) \
+		-massPendulum*Length*np.sin(InitialValues[0])*np.cos(InitialValues[0])*InitialValues[1]**2)  /  ( Length*(massCart+massPendulum*np.sin(InitialValues[0])**2) );
 
-	#Theta2Dot = ( (massCart+massPendulum) * g * math.sin(InitialValues[0]) - massPendulum*Length*math.sin(InitialValues[0]) * math.cos(InitialValues[0]) * InitialValues[1]**2 \
-	#	-(Force-Bcart*InitialValues[3])*math.cos(InitialValues[0]) ) / (Length * (massCart+massPendulum*(math.sin(InitialValues[0]))**2));
-	#x2Dot = ((Force-Bcart*InitialValues[3]) + massPendulum*math.sin(InitialValues[0]) * (Length*InitialValues[1]-g * math.cos(InitialValues[0])))/(massCart+massPendulum*(math.sin(InitialValues[0]))**2)
+	x2Dot = 1/(massCart+massPendulum) * (Force_eq + massPendulum*Length*np.sin(InitialValues[0])*InitialValues[1]**2 - ( Torque_eq/Length*np.cos(InitialValues[0])*(massCart+massPendulum) \
+		- Force_eq*massPendulum*np.cos(InitialValues[0])**2 + massPendulum*g*np.sin(InitialValues[0])*np.cos(InitialValues[0])*(massPendulum+massCart) - massPendulum**2*Length*np.sin(InitialValues[0])*np.cos(InitialValues[0])**2*InitialValues[1]**2) \
+	/( massCart+massPendulum*np.sin(InitialValues[0])**2 ) )
 
 
 	return Theta1Dot, Theta2Dot, x1Dot, x2Dot
