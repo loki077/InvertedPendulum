@@ -19,10 +19,10 @@ Args =  (massCart, Length, g, massPendulum, Bcart, Force, Torque);
 Ts = 0.01; #[s]
 SimulationTime = 20.0; #[s]
 
-InitialAngle = math.pi/2; #[rad]
-InitialAngleRate = 0.0; #[rad/s]
+InitialAngle = 0; #[rad]
+InitialAngleRate = 0.1; #[rad/s]
 InitialPosition = 0.0; #[m]
-InitialVelocity = 0.0; #[m]
+InitialVelocity = -0.2; #[m]
 InitialValues = (InitialAngle, InitialAngleRate, InitialPosition, InitialVelocity);
 #print(InitialValues[3])
 
@@ -42,10 +42,12 @@ def PendulumOnCartSim(InitialValues, t, massCart, Length, g, massPendulum, Bcart
 	Theta2Dot = ( Torque_eq/(massPendulum*Length)*(massPendulum+massCart) - Force_eq*np.cos(InitialValues[0]) + g*np.sin(InitialValues[0])*(massCart+massPendulum) \
 		-massPendulum*Length*np.sin(InitialValues[0])*np.cos(InitialValues[0])*InitialValues[1]**2)  /  ( Length*(massCart+massPendulum*np.sin(InitialValues[0])**2) );
 
-	x2Dot = 1/(massCart+massPendulum) * (Force_eq + massPendulum*Length*np.sin(InitialValues[0])*InitialValues[1]**2 - ( Torque_eq/Length*np.cos(InitialValues[0])*(massCart+massPendulum) \
-		- Force_eq*massPendulum*np.cos(InitialValues[0])**2 + massPendulum*g*np.sin(InitialValues[0])*np.cos(InitialValues[0])*(massPendulum+massCart) - massPendulum**2*Length*np.sin(InitialValues[0])*np.cos(InitialValues[0])**2*InitialValues[1]**2) \
-	/( massCart+massPendulum*np.sin(InitialValues[0])**2 ) )
+	#x2Dot = 1/(massCart+massPendulum) * (Force_eq + massPendulum*Length*np.sin(InitialValues[0])*InitialValues[1]**2 - ( Torque_eq/Length*np.cos(InitialValues[0])*(massCart+massPendulum) \
+	#	- Force_eq*massPendulum*np.cos(InitialValues[0])**2 + massPendulum*g*np.sin(InitialValues[0])*np.cos(InitialValues[0])*(massPendulum+massCart) - massPendulum**2*Length*np.sin(InitialValues[0])*np.cos(InitialValues[0])**2*InitialValues[1]**2) \
+	#/( massCart+massPendulum*np.sin(InitialValues[0])**2 ) )
 
+
+	x2Dot = ( Force_eq - Torque_eq/Length*np.cos(InitialValues[0]) + massPendulum*np.sin(InitialValues[0])*(Length*InitialValues[1]**2-g*np.cos(InitialValues[0])) ) / ( massCart+massPendulum*np.sin(InitialValues[0])**2 );
 
 	return Theta1Dot, Theta2Dot, x1Dot, x2Dot
 
